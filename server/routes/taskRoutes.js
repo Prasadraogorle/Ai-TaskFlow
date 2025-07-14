@@ -1,8 +1,8 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
+const mongoose = require('mongoose');
 const Task = require('../models/Task');
-
 
 const router = express.Router();
 
@@ -17,15 +17,22 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
+// ✅ GET /api/tasks
 router.get('/', async (req, res) => {
   try {
     const { userId } = req.query;
+    console.log('Fetching tasks. userId:', userId);
 
     if (!userId) {
       return res.status(400).json({ message: 'userId query param is required.' });
     }
 
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: 'Invalid userId format.' });
+    }
+
     const tasks = await Task.find({ userId }).sort({ createdAt: -1 });
+    console.log('Tasks found:', tasks.length);
     res.json(tasks);
   } catch (error) {
     console.error('Error fetching tasks:', error);
@@ -33,6 +40,7 @@ router.get('/', async (req, res) => {
   }
 });
 
+// ✅ POST /api/tasks
 router.post('/', upload.single('image'), async (req, res) => {
   try {
     const { title, userId, completed, startTime, endTime } = req.body;
@@ -41,14 +49,20 @@ router.post('/', upload.single('image'), async (req, res) => {
       return res.status(400).json({ message: 'Title and userId are required.' });
     }
 
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: 'Invalid userId format.' });
+    }
+
+    const isCompleted = String(completed).toLowerCase() === 'true';
+
     const task = new Task({
       title,
       userId,
-      completed: completed === 'true',
+      completed: isCompleted,
       startTime: startTime ? new Date(startTime) : null,
       endTime: endTime ? new Date(endTime) : null,
       createdAt: new Date(),
-      completedAt: completed === 'true' ? new Date() : null,
+      completedAt: isCompleted ? new Date() : null,
       imagePath: req.file ? req.file.path : null,
     });
 
@@ -60,23 +74,30 @@ router.post('/', upload.single('image'), async (req, res) => {
   }
 });
 
-router.put('/:id', upload.single('image'), async (req, res) => {
+// ✅ PATCH /api/tasks/:id
+router.patch('/:id', upload.single('image'), async (req, res) => {
   try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid task ID format.' });
+    }
+
     const updates = { ...req.body };
 
     if (req.file) {
       updates.imagePath = req.file.path;
     }
 
-    if (updates.completed === 'true' || updates.completed === true) {
-      updates.completed = true;
-      updates.completedAt = new Date();
-    } else if (updates.completed === 'false' || updates.completed === false) {
-      updates.completed = false;
-      updates.completedAt = null;
+    if (updates.hasOwnProperty('completed')) {
+      const completedVal = String(updates.completed).toLowerCase();
+      const isCompleted = completedVal === 'true' || completedVal === '1';
+
+      updates.completed = isCompleted;
+      updates.completedAt = isCompleted ? new Date() : null;
     }
 
-    const updatedTask = await Task.findByIdAndUpdate(req.params.id, updates, { new: true });
+    const updatedTask = await Task.findByIdAndUpdate(id, updates, { new: true });
 
     if (!updatedTask) {
       return res.status(404).json({ message: 'Task not found.' });
@@ -89,9 +110,16 @@ router.put('/:id', upload.single('image'), async (req, res) => {
   }
 });
 
+// ✅ DELETE /api/tasks/:id
 router.delete('/:id', async (req, res) => {
   try {
-    const deleted = await Task.findByIdAndDelete(req.params.id);
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid task ID format.' });
+    }
+
+    const deleted = await Task.findByIdAndDelete(id);
 
     if (!deleted) {
       return res.status(404).json({ message: 'Task not found.' });
@@ -104,12 +132,17 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// ✅ POST /api/tasks/clear-tasks
 router.post('/clear-tasks', async (req, res) => {
   try {
     const { userId } = req.body;
 
     if (!userId) {
       return res.status(400).json({ message: 'userId is required.' });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: 'Invalid userId format.' });
     }
 
     await Task.deleteMany({ userId });

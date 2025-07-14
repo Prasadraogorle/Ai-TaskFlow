@@ -1,6 +1,7 @@
 const Task = require('../models/Task');
-const path = require('path');
+const mongoose = require('mongoose');
 
+// ✅ GET all tasks
 const getTasks = async (req, res) => {
   try {
     const { userId } = req.query;
@@ -9,14 +10,19 @@ const getTasks = async (req, res) => {
       return res.status(400).json({ message: 'userId query param is required.' });
     }
 
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: 'Invalid userId format.' });
+    }
+
     const tasks = await Task.find({ userId }).sort({ createdAt: -1 });
-    res.json(tasks);
+    return res.status(200).json(tasks);
   } catch (error) {
     console.error('Error fetching tasks:', error);
-    res.status(500).json({ message: 'Failed to fetch tasks.' });
+    return res.status(500).json({ message: 'Failed to fetch tasks.', error: error.message });
   }
 };
 
+// ✅ Create task
 const createTask = async (req, res) => {
   try {
     const { title, userId, completed, startTime, endTime } = req.body;
@@ -25,71 +31,94 @@ const createTask = async (req, res) => {
       return res.status(400).json({ message: 'Title and userId are required.' });
     }
 
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: 'Invalid userId format.' });
+    }
+
     const task = new Task({
       title,
       userId,
-      completed: completed === 'true',
+      completed: completed === 'true' || completed === true,
       startTime: startTime ? new Date(startTime) : null,
       endTime: endTime ? new Date(endTime) : null,
       createdAt: new Date(),
-      completedAt: completed === 'true' ? new Date() : null,
+      completedAt: completed === 'true' || completed === true ? new Date() : null,
       imagePath: req.file ? req.file.path : null,
     });
 
     const savedTask = await task.save();
-    res.status(201).json(savedTask);
+    return res.status(201).json(savedTask);
   } catch (error) {
     console.error('Error creating task:', error);
-    res.status(500).json({ message: 'Failed to create task.' });
+    return res.status(500).json({ message: 'Failed to create task.', error: error.message });
   }
 };
 
+// ✅ Update task
 const updateTask = async (req, res) => {
   try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid task ID format.' });
+    }
+
     const updates = { ...req.body };
 
     if (req.file) {
       updates.imagePath = req.file.path;
     }
 
-    if (updates.completed === 'true' || updates.completed === true) {
-      updates.completed = true;
-      updates.completedAt = new Date();
-    } else if (updates.completed === 'false' || updates.completed === false) {
-      updates.completed = false;
-      updates.completedAt = null;
+    if (typeof updates.completed !== 'undefined') {
+      if (updates.completed === true || updates.completed === 'true') {
+        updates.completed = true;
+        updates.completedAt = new Date();
+      } else {
+        updates.completed = false;
+        updates.completedAt = null;
+      }
     }
 
-    const updatedTask = await Task.findByIdAndUpdate(req.params.id, updates, {
-      new: true,
-    });
+    const updatedTask = await Task.findByIdAndUpdate(
+      id,
+      updates,
+      { new: true }
+    );
 
     if (!updatedTask) {
       return res.status(404).json({ message: 'Task not found.' });
     }
 
-    res.json(updatedTask);
+    return res.status(200).json(updatedTask);
   } catch (error) {
     console.error('Error updating task:', error);
-    res.status(500).json({ message: 'Failed to update task.' });
+    return res.status(500).json({ message: 'Failed to update task.', error: error.message });
   }
 };
 
+// ✅ Delete task
 const deleteTask = async (req, res) => {
   try {
-    const deleted = await Task.findByIdAndDelete(req.params.id);
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid task ID format.' });
+    }
+
+    const deleted = await Task.findByIdAndDelete(id);
 
     if (!deleted) {
       return res.status(404).json({ message: 'Task not found.' });
     }
 
-    res.json({ message: 'Task deleted successfully.' });
+    return res.json({ message: 'Task deleted successfully.' });
   } catch (error) {
     console.error('Error deleting task:', error);
-    res.status(500).json({ message: 'Failed to delete task.' });
+    return res.status(500).json({ message: 'Failed to delete task.', error: error.message });
   }
 };
 
+// ✅ Clear tasks
 const clearTasks = async (req, res) => {
   try {
     const { userId } = req.body;
@@ -98,11 +127,16 @@ const clearTasks = async (req, res) => {
       return res.status(400).json({ message: 'userId is required.' });
     }
 
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: 'Invalid userId format.' });
+    }
+
     await Task.deleteMany({ userId });
-    res.json({ message: 'All tasks cleared for user.' });
+
+    return res.json({ message: 'All tasks cleared for user.' });
   } catch (error) {
     console.error('Error clearing tasks:', error);
-    res.status(500).json({ message: 'Failed to clear tasks.' });
+    return res.status(500).json({ message: 'Failed to clear tasks.', error: error.message });
   }
 };
 

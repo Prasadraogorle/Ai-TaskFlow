@@ -1,3 +1,4 @@
+
 const mongoose = require('mongoose');
 
 const taskSchema = new mongoose.Schema({
@@ -30,8 +31,7 @@ const taskSchema = new mongoose.Schema({
     default: null
   },
   userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    type: String,
     required: true
   }
 }, {

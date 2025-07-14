@@ -2,23 +2,31 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
-const taskRoutes = require('./routes/taskRoutes');
-const authRouter = require('./routes/auth-routes')
-const dotenv = require('dotenv')
+const dotenv = require('dotenv');
 const cookieParser = require('cookie-parser');
+
+const taskRoutes = require('./routes/taskRoutes');
+const authRouter = require('./routes/auth-routes');
+
+dotenv.config();
+
 const app = express();
-dotenv.config()
-app.use(cors());
+
+// CORS config
+app.use(cors({
+  origin: ['http://localhost:3000'],
+  credentials: true,
+}));
+
 app.use(cookieParser());
 app.use(express.json());
 
 // ✅ Serve uploaded images
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
-// Routes
+// ✅ FIX: mount tasks router under /api/tasks
 app.use('/api/tasks', taskRoutes);
-app.use('/api/auth', authRouter)
-
+app.use('/api/auth', authRouter);
 
 // MongoDB connection
 mongoose
@@ -28,11 +36,11 @@ mongoose
   })
   .then(() => {
     console.log('MongoDB connected');
-    app.listen(5000, () => {
-      console.log('Server running on port 5000');
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
     });
   })
   .catch((err) => {
     console.error(err);
   });
-
