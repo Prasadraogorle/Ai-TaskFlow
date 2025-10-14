@@ -306,13 +306,13 @@ export default function ExampleGeneration() {
   return (
     <div>
          {/* Example Sections */}
-         <div className={`text-2xl p-4 font-bold`}>Example roadmap generation</div>
+         <div className={`text-2xl p-4 font-bold text-center`}>Example roadmap generation</div>
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
           {/* Python Programming Example */}
           <div className="bg-white rounded-xl shadow-lg py-8 px-4">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-xl font-bold text-gray-800">
+                <h2 className="text-md font-bold text-gray-800">
                   Python Programming Complete Map
                 </h2>
                 <p className="text-sm text-gray-600">{pythonRoadmap.totalConcepts} total concepts</p>
@@ -396,7 +396,7 @@ export default function ExampleGeneration() {
           <div className="bg-white rounded-xl shadow-lg py-8 px-4">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-xl font-bold text-gray-800">
+                <h2 className="text-md font-bold text-gray-800">
                   React Development Complete Map
                 </h2>
                 <p className="text-sm text-gray-600">{reactRoadmap.totalConcepts} total concepts</p>

@@ -14,15 +14,7 @@ export default function Header() {
   return (
     <div>
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">
-            Complete Skill Concept Roadmap
-          </h1>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Get a comprehensive overview of any skill from basic concepts to guru-level mastery. 
-            Discover all topics, concepts, and related skills to plan your complete learning journey.
-          </p>
-        </div>
+        
 {/* Skill Progression Levels */}
         <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
           <h2 className="text-2xl font-bold text-gray-800 mb-6">

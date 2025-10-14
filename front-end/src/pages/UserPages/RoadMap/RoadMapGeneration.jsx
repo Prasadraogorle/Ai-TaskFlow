@@ -146,12 +146,21 @@ export default function RoadMapGeneration() {
   return (
     <div className="min-h-screen pt-20 bg-gray-50 py-8 px-4">
       <div className="max-w-6xl mx-auto">
-        <Header />
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-800 mb-4">
+            Complete Skill Concept Roadmap
+          </h1>
+          <p className="text-sm text-gray-600 max-w-3xl mx-auto">
+            Get a comprehensive overview of any skill from basic concepts to guru-level mastery. 
+            Discover all topics, concepts, and related skills to plan your complete learning journey.
+          </p>
+        </div>
+        
         {/* Main Form Card */}
         <div className="bg-white rounded-xl shadow-lg py-8 px-4 mb-8">
           {/* Skill Input Section */}
           <div className="mb-8">
-            <label className="block text-lg font-semibold text-gray-700 mb-4">
+            <label className="block text-lg font-semibold text-green-600 mb-4">
               Enter the skill you want to master completely
             </label>
             <input
@@ -159,8 +168,8 @@ export default function RoadMapGeneration() {
               value={skill}
               required
               onChange={(e) => setSkill(e.target.value)}
-              placeholder="e.g., Python Programming, React Development, Data Science..."
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none text-lg transition-colors"
+              placeholder="e.g. Python Programming"
+              className="w-full px-4 py-3 border-2 border-green-300 rounded-lg focus:border-green-600 focus:outline-none text-lg transition-colors"
             />
           </div>
 
@@ -227,11 +236,11 @@ export default function RoadMapGeneration() {
           <div className="text-center">
             <button
               onClick={roadmapGenerationRequest}
-              className="bg-green-500 hover:bg-green-600 text-white font-semibold py-4 px-8 rounded-lg text-lg transition-colors duration-200 shadow-md hover:shadow-lg"
+              className="bg-green-500 hover:bg-green-600 text-white font-semibold py-4 px-8 rounded-lg text-sm transition-colors duration-200 shadow-md hover:shadow-lg"
             >
               {isLoading ? (
                 <div className="flex  gap-3">
-                  <div className="w-7 h-7 p-0 border-t-1 animate-spin rounded-3xl"></div>
+                  <div className="w-4 h-4 p-0 border-t-1 animate-spin rounded-3xl"></div>
                   <div>Generating Complete Concept Map</div>{" "}
                 </div>
               ) : (
@@ -250,7 +259,7 @@ export default function RoadMapGeneration() {
             </div>
           )}
         </div>
-
+        <Header />
         <ExampleGeneration />
       </div>
     </div>
