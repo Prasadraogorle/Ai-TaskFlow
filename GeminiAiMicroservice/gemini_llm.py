@@ -19,7 +19,7 @@ class GeminiLLM(LLM):
         run_manager=None,
         **kwargs,
     ) -> str:
-        url = f'https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent'
+        url = f'https://generativelanguage.googleapis.com/v1/models/{self.model}:generateContent'
         headers = {'Content-Type': 'application/json'}
         params = {'key': self.api_key}
 
