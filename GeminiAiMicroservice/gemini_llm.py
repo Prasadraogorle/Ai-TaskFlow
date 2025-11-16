@@ -1,17 +1,21 @@
 from typing import Optional, List
-from langchain.llms.base import LLM
+from langchain_core.language_models import LLM
 import requests
 
 
 class GeminiLLM(LLM):
     api_key: str
-    model: str = "gemini-flash-latest"   # ✅ Current latest model
+    model: str = "gemini-flash-latest"
     temperature: float = 0.7
     max_tokens: int = 8192
 
     @property
     def _llm_type(self) -> str:
         return "gemini"
+
+    def __call__(self, prompt: str, stop=None, **kwargs):
+        """Allow model(prompt) syntax by routing to _call()."""
+        return self._call(prompt, stop=stop, **kwargs)
 
     def _call(
         self,
@@ -20,10 +24,8 @@ class GeminiLLM(LLM):
         run_manager=None,
         **kwargs,
     ) -> str:
-        # ✅ Use official Gemini 2.5 API endpoint
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent"
 
-        # ✅ Use correct header for Gemini API
         headers = {
             "Content-Type": "application/json",
             "x-goog-api-key": self.api_key
@@ -51,7 +53,6 @@ class GeminiLLM(LLM):
             response.raise_for_status()
             result = response.json()
 
-            # ✅ Extract text safely
             if "candidates" in result and result["candidates"]:
                 candidate = result["candidates"][0]
                 content = candidate.get("content", {})

@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from typing import Optional, List
 from models import LearningPlanRequest, TaskItem, LearningPlanResponse
 from learning_plan_generator import LearningPlanGenerator
+import traceback
 
 app = FastAPI(
     title="Enhanced Learning Plan Generator API",
@@ -36,7 +37,7 @@ generator = None
 @app.on_event("startup")
 async def startup_event():
     global generator
-    api_key = os.getenv("GEMINI_API_KEY")
+    api_key = "AIzaSyACQpqQ7QE0hq5O_yONiixRfEiUOPItaPA"
     if not api_key:
         raise Exception("GEMINI_API_KEY environment variable not set")
     
@@ -90,9 +91,11 @@ async def generate_plan(request: LearningPlanRequest):
         return response
         
     except Exception as e:
-        print(f"Error in generate_plan endpoint: {e}")
-        raise HTTPException(status_code=500, detail=f"Error generating plan: {str(e)}")
+        print("\n🔥 SERVER CRASHED WITH ERROR:")
+        print(str(e))
+        traceback.print_exc()   # full error details
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8001)
