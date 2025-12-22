@@ -2,6 +2,8 @@ from typing import Optional, List
 from langchain_core.language_models import LLM
 import requests
 
+# Updated import for langchain compatibility
+
 
 class GeminiLLM(LLM):
     api_key: str
