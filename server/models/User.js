@@ -46,6 +46,14 @@ const userSchema = new mongoose.Schema({
     enum: ['user', 'admin'],
     default: 'user'
   },
+  googleTokens: {
+  access_token: String,
+  refresh_token: String,
+  scope: String,
+  token_type: String,
+  expiry_date: Number
+},
+
   otp: {
     code: { type: String },   
   }
@@ -53,6 +61,5 @@ const userSchema = new mongoose.Schema({
   timestamps: true
 });
 
-const User = mongoose.model('User', userSchema);
-
+const User = mongoose.models.User || mongoose.model("User", userSchema);
 export default User;
