@@ -35,7 +35,12 @@ const taskGroupSchema = new mongoose.Schema({
   resources: {
     type: [resourceSchema], 
     default: []
-  }
+  },
+  calendarEventIds: {
+  type: [String],
+  default: []
+},
+
 });
 
 export default taskGroupSchema;
