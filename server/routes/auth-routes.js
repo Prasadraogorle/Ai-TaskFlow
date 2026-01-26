@@ -35,14 +35,15 @@ router.get("/check-auth", authMiddleware, async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Authenticated user!",
-      user: {
-        id: user._id,
-        email: user.email,
-        userName: user.name,
-        profilePicture: user.profilePicture,
-        authProvider: user.authProvider,
-        role: user.role,
-      },
+     user: {
+      id: user._id,
+      email: user.email,
+      userName: user.name,
+      profilePicture: user.profilePicture,
+      authProvider: user.authProvider,
+      role: user.role,
+      googleConnected: !!user.googleTokens?.refresh_token
+    }
     });
   } catch (error) {
     console.error(error);
