@@ -42,6 +42,6 @@ const goalSchema = new mongoose.Schema({
 }, {
   timestamps: true
 });
-
-const Goal = mongoose.model('Goal', goalSchema);
+const Goal = mongoose.models.Goal || mongoose.model("Goal", goalSchema);
 export default Goal;
+
