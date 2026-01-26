@@ -16,6 +16,7 @@ import testimonialRouter from './routes/testimonial-routes.js';
 import userDashboardRoutes from './routes/userDashboard-routes.js';
 import loginHistory from './routes/loginHistory-routes.js';
 import otpRoutes from './routes/otp-routes.js';
+import googleRoutes from "./routes/googleRoutes.js";
 
 dotenv.config();
 
@@ -44,6 +45,7 @@ app.use('/api/testimonials', testimonialRouter);
 app.use('/api/user-dashboard', userDashboardRoutes);
 app.use('/api/loginHistory', loginHistory);
 app.use('/api/otp', otpRoutes);
+app.use("/api/google", googleRoutes);
 
 mongoose
   .connect(process.env.MONGO_URI)
