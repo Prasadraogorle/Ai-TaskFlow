@@ -56,7 +56,7 @@ class LearningPlanGenerator:
                 )
                 
                 print(f"Attempt {attempt + 1}: Calling Gemini API with enhanced prompt...")
-                raw_response = self.llm(formatted_prompt)
+                raw_response = self.llm.invoke(formatted_prompt)
                 
                 if raw_response.startswith("Error:"):
                     print(f"LLM error on attempt {attempt + 1}: {raw_response}")

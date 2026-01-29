@@ -1,5 +1,5 @@
 from typing import Optional, List
-from langchain_core.language_models import LLM
+from langchain_core.language_models.llms import LLM
 import requests
 
 # Updated import for langchain compatibility
@@ -7,13 +7,20 @@ import requests
 
 class GeminiLLM(LLM):
     api_key: str
-    model: str = "gemini-flash-latest"
-    temperature: float = 0.7
-    max_tokens: int = 8192
+    model: str = "gemini-2.0-flash"
+    temperature: float = 0.8
+    max_tokens: int = 8000
 
     @property
     def _llm_type(self) -> str:
         return "gemini"
+    @property
+    def _identifying_params(self):
+        return {
+            "model": self.model,
+            "temperature": self.temperature,
+            "max_tokens": self.max_tokens,
+        }
 
     def __call__(self, prompt: str, stop=None, **kwargs):
         """Allow model(prompt) syntax by routing to _call()."""
